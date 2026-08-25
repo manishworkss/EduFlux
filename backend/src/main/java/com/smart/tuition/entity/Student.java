@@ -23,15 +23,13 @@ public class Student {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @NotBlank(message = "Enrollment number is required")
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     private String enrollmentNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(name = "course_id")
     private Course course;
 
-    @NotNull(message = "Semester is required")
     private Integer semester;
 
     private String phone;
