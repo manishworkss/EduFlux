@@ -19,6 +19,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import CourseManagement from './pages/CourseManagement';
 import FeeStructureManagement from './pages/FeeStructureManagement';
 import StudentRegistry from './pages/StudentRegistry';
+import AdminAIAssistant from './pages/AdminAIAssistant';
 
 import StudentLayout from './components/StudentLayout';
 import StudentDashboard from './pages/StudentDashboard';
@@ -30,6 +31,8 @@ import Receipts from './pages/Receipts';
 import AIAssistant from './pages/AIAssistant';
 import Settings from './pages/Settings';
 
+import ForceChangePassword from './pages/ForceChangePassword';
+
 function App() {
   return (
     <Router>
@@ -37,6 +40,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/force-change-password" element={<ForceChangePassword />} />
           <Route 
             path="/admin" 
             element={
@@ -49,6 +53,7 @@ function App() {
             <Route path="courses" element={<CourseManagement />} />
             <Route path="fee-structures" element={<FeeStructureManagement />} />
             <Route path="students" element={<StudentRegistry />} />
+            <Route path="ai-assistant" element={<AdminAIAssistant />} />
           </Route>
           <Route 
             path="/student" 

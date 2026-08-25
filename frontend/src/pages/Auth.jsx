@@ -171,7 +171,12 @@ const Auth = () => {
             </>
           ) : (
             <>
-              <h2>{isLogin ? "Sign In to Your Account" : "Create Your Account"}</h2>
+              <h2>{isLogin ? "Sign In to Your Account" : "Create Admin Account"}</h2>
+              {!isLogin && (
+                <p style={{ color: '#64748b', marginBottom: '24px', fontSize: '0.9rem' }}>
+                  Note: This registration is for Admin use only. Students will be provided accounts by their administrator.
+                </p>
+              )}
               
               {error && <div className="error-message">{error}</div>}
               

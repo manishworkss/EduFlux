@@ -26,6 +26,8 @@ public class AIAssistantController {
     @Data
     public static class AIQueryResponse {
         private String response;
+        private String action;
+        private Object payload;
     }
 
     @PostMapping("/ask")
@@ -33,26 +35,36 @@ public class AIAssistantController {
         if (userDetails == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
         }
-        Student student = studentRepository.findByUser_UserId(userDetails.getUserId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
 
-        // Mock AI Logic based on rules for the prototype
+        String role = userDetails.getRole();
         String query = request.getQuery().toLowerCase();
-        String responseText;
+        AIQueryResponse response = new AIQueryResponse();
+        response.setAction("NONE");
 
-        if (query.contains("how much") || query.contains("pending")) {
-            responseText = "You have fees pending. Please check your 'My Fees' tab for a detailed breakdown.";
-        } else if (query.contains("next payment") || query.contains("due")) {
-            responseText = "Your next payment is due soon. Check the 'Dashboard' for upcoming due dates.";
-        } else if (query.contains("overdue")) {
-            responseText = "Overdue fees incur a late penalty. Make sure to pay them via the 'My Fees' section.";
+        if ("ROLE_ADMIN".equals(role)) {
+            if (query.contains("create student") || query.contains("create account")) {
+                response.setResponse("Creating student accounts is a write operation. Confirm before continuing.");
+                response.setAction("CREATE_STUDENT_PROMPT");
+            } else if (query.contains("overdue") || query.contains("pending")) {
+                response.setResponse("There are several students with overdue fees. Check the dashboard for details.");
+            } else {
+                response.setResponse("Hi Admin! I am the EduFlux AI Assistant. I can help you manage students, create accounts, and analyze fees.");
+            }
         } else {
-            responseText = "Hi " + student.getUser().getName().split(" ")[0] + "! I am the EduFlux AI Fee Assistant. I can help you with questions about your pending fees, due dates, and payment history.";
+            Student student = studentRepository.findByUser_UserId(userDetails.getUserId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
+
+            if (query.contains("how much") || query.contains("pending")) {
+                response.setResponse("You have fees pending. Please check your 'My Fees' tab for a detailed breakdown.");
+            } else if (query.contains("next payment") || query.contains("due")) {
+                response.setResponse("Your next payment is due soon. Check the 'Dashboard' for upcoming due dates.");
+            } else if (query.contains("overdue")) {
+                response.setResponse("Overdue fees incur a late penalty. Make sure to pay them via the 'My Fees' section.");
+            } else {
+                response.setResponse("Hi " + student.getUser().getName().split(" ")[0] + "! I am the EduFlux AI Fee Assistant. I can help you with questions about your pending fees, due dates, and payment history.");
+            }
         }
 
-        AIQueryResponse response = new AIQueryResponse();
-        response.setResponse(responseText);
-        
         return ResponseEntity.ok(response);
     }
 }

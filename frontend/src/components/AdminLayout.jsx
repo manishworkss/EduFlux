@@ -16,6 +16,7 @@ const AdminLayout = () => {
             <li><Link to="/admin/courses">Courses</Link></li>
             <li><Link to="/admin/fee-structures">Fee Structures</Link></li>
             <li><Link to="/admin/students">Students</Link></li>
+            <li><Link to="/admin/ai-assistant">AI Assistant</Link></li>
           </ul>
         </nav>
         <button className="logout-btn" onClick={logout}>Logout</button>
