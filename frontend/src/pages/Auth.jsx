@@ -12,7 +12,6 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [role, setRole] = useState('ROLE_STUDENT');
   const [otp, setOtp] = useState('');
   
   // UI States
@@ -21,18 +20,8 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   
-  const handleRoleChange = (newRole) => {
-    setRole(newRole);
-    if (isLogin) {
-      if (newRole === 'ROLE_ADMIN') {
-        setEmail('admin@example.com');
-        setPassword('password123');
-      } else {
-        setEmail('alice@example.com');
-        setPassword('password123');
-      }
-    }
-  };
+  // Admin and Student specific dummy credentials can be added to standard logins, 
+  // but we removed the role selector so no need to auto-fill based on role here.
   
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -58,8 +47,7 @@ const Auth = () => {
       await api.post('/auth/signup', {
         name: fullName,
         email,
-        password,
-        role
+        password
       });
       setShowOtpView(true);
       setSuccessMsg(`OTP has been sent to ${email}. Please check your inbox.`);
@@ -88,7 +76,11 @@ const Auth = () => {
       // or we can call a context method. We'll just manually navigate and let the app reload context if needed, 
       // but login() from context is better if we could pass the token. 
       // Since `login` in context does an API call, we can just do this:
-      window.location.href = response.data.role === 'ROLE_ADMIN' ? '/admin/dashboard' : '/student/dashboard';
+      if (response.data.mustChangePassword) {
+        window.location.href = '/force-change-password';
+      } else {
+        window.location.href = response.data.role === 'ROLE_ADMIN' ? '/admin/dashboard' : '/student/dashboard';
+      }
       
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid OTP');
@@ -231,25 +223,7 @@ const Auth = () => {
                   </div>
                 </div>
 
-                <div className="form-group role-group">
-                  <label>Role</label>
-                  <div className="role-selector">
-                    <button 
-                      type="button" 
-                      className={`role-btn ${role === 'ROLE_STUDENT' ? 'active' : ''}`}
-                      onClick={() => handleRoleChange('ROLE_STUDENT')}
-                    >
-                      Student
-                    </button>
-                    <button 
-                      type="button" 
-                      className={`role-btn ${role === 'ROLE_ADMIN' ? 'active' : ''}`}
-                      onClick={() => handleRoleChange('ROLE_ADMIN')}
-                    >
-                      Admin
-                    </button>
-                  </div>
-                </div>
+
 
                 <button type="submit" className="submit-btn" disabled={loading}>
                   {loading ? "Processing..." : (isLogin ? "Sign In" : "Create Account →")}

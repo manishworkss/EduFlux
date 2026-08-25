@@ -55,8 +55,8 @@ const StudentLayout = () => {
           <div className="header-greeting">
             {profile ? (
               <>
-                <h1>{getGreeting()}, {profile.user?.name.split(' ')[0]} 👋</h1>
-                <p>{profile.course?.courseName} • Semester {profile.currentSemester} • Academic Year {profile.academicYear} | Enrollment No: {profile.enrollmentNumber}</p>
+                <h1>{getGreeting()}, {profile.user?.name?.split(' ')[0] || 'Student'} 👋</h1>
+                <p>{profile.course?.courseName || 'No Course Assigned'} • Semester {profile.semester || 'N/A'} | Enrollment No: {profile.enrollmentNumber || 'N/A'}</p>
               </>
             ) : (
               <h1>Loading...</h1>

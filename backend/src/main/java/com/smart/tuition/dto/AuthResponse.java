@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.smart.tuition.entity.enums.Role;
 
 @Data
 @Builder
@@ -12,5 +13,6 @@ import lombok.NoArgsConstructor;
 public class AuthResponse {
     private String token;
     private Long userId;
-    private String role;
+    private Role role;
+    private Boolean mustChangePassword;
 }

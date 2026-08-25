@@ -39,6 +39,10 @@ public class CustomUserDetails implements UserDetails {
         return user.getRole().name();
     }
 
+    public Boolean getMustChangePassword() {
+        return user.getMustChangePassword();
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

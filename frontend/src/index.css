@@ -103,3 +103,60 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* Dark Theme Variables */
+body.dark-theme {
+  --background-color: #0f172a;
+  --text-color: #f8fafc;
+  --card-bg: #1e293b;
+  --border-color: #334155;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+body.dark-theme .navbar {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+body.dark-theme .card,
+body.dark-theme .stat-card,
+body.dark-theme .profile-card,
+body.dark-theme .settings-card,
+body.dark-theme .fee-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+body.dark-theme .table-header,
+body.dark-theme th {
+  background: #334155;
+  color: #f8fafc;
+}
+
+body.dark-theme td {
+  border-bottom: 1px solid var(--border-color);
+}
+
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme h4 {
+  color: var(--text-color) !important;
+}
+
+body.dark-theme .sidebar {
+  background: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+}
+
+body.dark-theme .sidebar-link {
+  color: #cbd5e1;
+}
+
+body.dark-theme .sidebar-link:hover,
+body.dark-theme .sidebar-link.active {
+  background: #334155;
+  color: #fff;
+}

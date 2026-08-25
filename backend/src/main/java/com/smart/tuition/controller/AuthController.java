@@ -24,6 +24,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,7 +61,8 @@ public class AuthController {
         AuthResponse response = AuthResponse.builder()
                 .token(jwtToken)
                 .userId(userDetails.getUserId())
-                .role(userDetails.getRole())
+                .role(Role.valueOf(userDetails.getRole()))
+                .mustChangePassword(userDetails.getMustChangePassword())
                 .build();
 
         return ResponseEntity.ok(response);
@@ -98,6 +100,7 @@ public class AuthController {
     }
 
     @PostMapping("/verify-otp")
+    @Transactional
     public ResponseEntity<AuthResponse> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
         OtpVerification otpVerification = otpVerificationRepository.findTopByEmailOrderByCreatedAtDesc(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No pending OTP found for this email"));
@@ -117,22 +120,15 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to parse signup data");
         }
 
-        // Create User
+        // Create User (Only Admin can sign up publicly)
         User user = new User();
         user.setName(signupRequest.getName());
         user.setEmail(signupRequest.getEmail());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-        user.setRole(signupRequest.getRole());
+        user.setRole(Role.ROLE_ADMIN);
+        user.setMustChangePassword(false);
         
         user = userRepository.save(user);
-
-        // If Student, create empty Student profile
-        if (user.getRole() == Role.ROLE_STUDENT) {
-            Student student = new Student();
-            student.setUser(user);
-            student.setEnrollmentNumber("TMP-" + System.currentTimeMillis());
-            studentRepository.save(student);
-        }
 
         otpVerificationRepository.delete(otpVerification);
 
@@ -147,9 +143,34 @@ public class AuthController {
         AuthResponse response = AuthResponse.builder()
                 .token(jwtToken)
                 .userId(userDetails.getUserId())
-                .role(userDetails.getRole())
+                .role(Role.valueOf(userDetails.getRole()))
+                .mustChangePassword(userDetails.getMustChangePassword())
                 .build();
 
         return ResponseEntity.ok(response);
+    }
+
+    public static class ChangePasswordRequest {
+        private String newPassword;
+        public String getNewPassword() { return newPassword; }
+        public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @RequestBody ChangePasswordRequest request,
+            Authentication authentication) {
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        }
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User user = userRepository.findById(userDetails.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setMustChangePassword(false);
+        userRepository.save(user);
+        
+        return ResponseEntity.ok().body("{\"message\": \"Password changed successfully\"}");
     }
 }

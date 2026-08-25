@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await api.post('/auth/login', { email, password });
-      const { token, role, userId } = response.data;
+      const { token, role, userId, mustChangePassword } = response.data;
       
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
@@ -31,7 +31,9 @@ export const AuthProvider = ({ children }) => {
       
       setUser({ role, userId });
       
-      if (role === 'ROLE_ADMIN') {
+      if (mustChangePassword) {
+        navigate('/force-change-password');
+      } else if (role === 'ROLE_ADMIN') {
         navigate('/admin/dashboard');
       } else {
         navigate('/student/dashboard');
