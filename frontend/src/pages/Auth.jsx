@@ -5,7 +5,9 @@ import api from '../services/api';
 import './Auth.css';
 
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(() => {
+    return sessionStorage.getItem('authMode') !== 'signup';
+  });
   const [showOtpView, setShowOtpView] = useState(false);
   
   // Form fields
@@ -90,7 +92,9 @@ const Auth = () => {
   };
 
   const toggleAuthMode = () => {
-    setIsLogin(!isLogin);
+    const newIsLogin = !isLogin;
+    setIsLogin(newIsLogin);
+    sessionStorage.setItem('authMode', newIsLogin ? 'login' : 'signup');
     setError('');
     setSuccessMsg('');
     setShowOtpView(false);
@@ -231,7 +235,7 @@ const Auth = () => {
 
 
                 <button type="submit" className="submit-btn" disabled={loading}>
-                  {loading ? "Processing..." : (isLogin ? "Sign In" : "Create Account →")}
+                  {loading ? "Processing..." : (isLogin ? "Sign In" : "Create Admin Account →")}
                 </button>
               </form>
 
