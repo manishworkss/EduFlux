@@ -1,52 +1,108 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import './Payments.css';
 
 const PaymentHistory = () => {
   const [payments, setPayments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    api.get('/payments/history/1') // Hardcoded student ID
-       .then(res => setPayments(res.data))
-       .catch(err => console.error(err));
+    const fetchPayments = async () => {
+      try {
+        const response = await api.get('/students/me/payments');
+        // Sort newest first
+        const sorted = response.data.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate));
+        setPayments(sorted);
+      } catch (error) {
+        console.error("Failed to fetch payment history", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPayments();
   }, []);
 
-  const downloadReceipt = (payment) => {
-    // In a real app, this would fetch a PDF blob from backend or generate it locally with jsPDF
-    alert('Mock PDF Download trigger for Receipt: ' + payment.receiptNumber);
+  const downloadReceipt = async (payment) => {
+    try {
+      const response = await api.get(`/receipts/generate/${payment.paymentId}`, {
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${payment.receiptNumber}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      alert('Receipt backend functionality pending implementation.');
+    }
   };
 
+  const filteredPayments = payments.filter(p => 
+    p.transactionId.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    p.studentFee?.feeStructure?.feeType.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (loading) return <div className="loading-state">Loading payment history...</div>;
+
   return (
-    <div>
-      <h2>Payment History</h2>
-      <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white', marginTop: '20px' }}>
-        <thead>
-          <tr style={{ background: '#ecf0f1', textAlign: 'left' }}>
-            <th style={{ padding: '12px' }}>Transaction ID</th>
-            <th style={{ padding: '12px' }}>Date</th>
-            <th style={{ padding: '12px' }}>Amount</th>
-            <th style={{ padding: '12px' }}>Method</th>
-            <th style={{ padding: '12px' }}>Status</th>
-            <th style={{ padding: '12px' }}>Receipt</th>
-          </tr>
-        </thead>
-        <tbody>
-          {payments.map(payment => (
-            <tr key={payment.paymentId} style={{ borderBottom: '1px solid #eee' }}>
-              <td style={{ padding: '12px' }}>{payment.transactionId}</td>
-              <td style={{ padding: '12px' }}>{new Date(payment.paymentDate).toLocaleDateString()}</td>
-              <td style={{ padding: '12px' }}>₹{payment.amount}</td>
-              <td style={{ padding: '12px' }}>{payment.paymentMethod}</td>
-              <td style={{ padding: '12px', color: payment.status === 'SUCCESS' ? 'green' : 'red' }}>{payment.status}</td>
-              <td style={{ padding: '12px' }}>
-                {payment.status === 'SUCCESS' && (
-                  <button onClick={() => downloadReceipt(payment)} style={{ padding: '6px 12px', background: '#3498db', color: 'white', border: 'none', borderRadius: '4px' }}>Download</button>
-                )}
-              </td>
+    <div className="payments-container">
+      <h2 className="section-title">Payment History</h2>
+      
+      <div className="payments-filters">
+        <input 
+          type="text" 
+          placeholder="Search by Transaction ID or Fee Type..." 
+          className="filter-input"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      <div className="payments-table-container">
+        <table className="payments-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Fee Type</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Transaction ID</th>
+              <th>Status</th>
+              <th>Receipt</th>
             </tr>
-          ))}
-          {payments.length === 0 && <tr><td colSpan="6" style={{ padding: '12px', textAlign: 'center' }}>No transactions found.</td></tr>}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredPayments.map(payment => (
+              <tr key={payment.paymentId}>
+                <td>{new Date(payment.paymentDate).toLocaleDateString()}</td>
+                <td>{payment.studentFee?.feeStructure?.feeType}</td>
+                <td style={{ fontWeight: 600 }}>₹{payment.amount.toLocaleString()}</td>
+                <td>{payment.paymentMethod}</td>
+                <td><code style={{ background: '#f1f5f9', padding: '4px', borderRadius: '4px' }}>{payment.transactionId}</code></td>
+                <td>
+                  <span className={`status-badge status-${payment.status === 'SUCCESS' ? 'paid' : 'overdue'}`}>
+                    {payment.status}
+                  </span>
+                </td>
+                <td>
+                  {payment.status === 'SUCCESS' && (
+                    <button onClick={() => downloadReceipt(payment)} className="receipt-btn">
+                      PDF
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {filteredPayments.length === 0 && (
+              <tr>
+                <td colSpan="7" className="empty-state">No payment history found.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

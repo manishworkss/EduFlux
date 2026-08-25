@@ -1,28 +1,61 @@
-import { useState, useEffect } from 'react';
-import api from '../services/api';
+import { useOutletContext } from 'react-router-dom';
+import './StudentProfile.css';
 
 const StudentProfile = () => {
-  const [profile, setProfile] = useState(null);
+  const { profile } = useOutletContext();
 
-  useEffect(() => {
-    api.get('/students/1') // Hardcoded demo ID
-       .then(res => setProfile(res.data))
-       .catch(err => console.error(err));
-  }, []);
-
-  if (!profile) return <div>Loading profile...</div>;
+  if (!profile) return <div className="loading-state">Loading profile...</div>;
 
   return (
-    <div style={{ background: 'white', padding: '20px', borderRadius: '8px' }}>
-      <h2>My Profile</h2>
-      <div style={{ marginTop: '20px', lineHeight: '1.8' }}>
-        <p><strong>Name:</strong> {profile.user?.name}</p>
-        <p><strong>Email:</strong> {profile.user?.email}</p>
-        <p><strong>Enrollment Number:</strong> {profile.enrollmentNumber}</p>
-        <p><strong>Course:</strong> {profile.course?.courseName}</p>
-        <p><strong>Semester:</strong> {profile.semester}</p>
-        <p><strong>Phone:</strong> {profile.phone || 'N/A'}</p>
-        <p><strong>Address:</strong> {profile.address || 'N/A'}</p>
+    <div className="profile-container">
+      <h2 className="section-title">My Profile</h2>
+      
+      <div className="profile-card">
+        <div className="profile-header">
+          <div className="profile-avatar">
+            {profile.user?.name.charAt(0)}
+          </div>
+          <div className="profile-header-info">
+            <h2>{profile.user?.name}</h2>
+            <p>Enrollment Number: {profile.enrollmentNumber}</p>
+          </div>
+        </div>
+
+        <h3 style={{ color: '#0f172a', marginBottom: '24px' }}>Academic Information</h3>
+        <div className="profile-grid">
+          <div className="profile-field">
+            <label>Course</label>
+            <div className="profile-field-value">{profile.course?.courseName}</div>
+          </div>
+          <div className="profile-field">
+            <label>Current Semester</label>
+            <div className="profile-field-value">Semester {profile.currentSemester}</div>
+          </div>
+          <div className="profile-field">
+            <label>Academic Year</label>
+            <div className="profile-field-value">{profile.academicYear}</div>
+          </div>
+          <div className="profile-field">
+            <label>Status</label>
+            <div className="profile-field-value" style={{ color: '#10b981', fontWeight: 700 }}>Active</div>
+          </div>
+        </div>
+
+        <h3 style={{ color: '#0f172a', margin: '32px 0 24px 0' }}>Personal Information</h3>
+        <div className="profile-grid">
+          <div className="profile-field">
+            <label>Email Address</label>
+            <div className="profile-field-value">{profile.user?.email}</div>
+          </div>
+          <div className="profile-field">
+            <label>Phone Number</label>
+            <div className="profile-field-value">{profile.phone || 'N/A'}</div>
+          </div>
+          <div className="profile-field" style={{ gridColumn: '1 / -1' }}>
+            <label>Address</label>
+            <div className="profile-field-value">{profile.address || 'N/A'}</div>
+          </div>
+        </div>
       </div>
     </div>
   );

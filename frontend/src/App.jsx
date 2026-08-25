@@ -1,14 +1,15 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { useContext } from 'react';
-import Login from './pages/Login';
+import Landing from './pages/Landing';
+import Auth from './pages/Auth';
 
 const PrivateRoute = ({ children, roles }) => {
   const { user, loading } = useContext(AuthContext);
 
   if (loading) return <div>Loading...</div>;
-  if (!user) return <Navigate to="/" />;
-  if (roles && !roles.includes(user.role)) return <Navigate to="/" />;
+  if (!user) return <Navigate to="/auth" />;
+  if (roles && !roles.includes(user.role)) return <Navigate to="/auth" />;
 
   return children;
 };
@@ -25,13 +26,17 @@ import StudentProfile from './pages/StudentProfile';
 import StudentFees from './pages/StudentFees';
 import StudentNotifications from './pages/StudentNotifications';
 import PaymentHistory from './pages/PaymentHistory';
+import Receipts from './pages/Receipts';
+import AIAssistant from './pages/AIAssistant';
+import Settings from './pages/Settings';
 
 function App() {
   return (
     <Router>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/auth" element={<Auth />} />
           <Route 
             path="/admin" 
             element={
@@ -58,6 +63,9 @@ function App() {
             <Route path="fees" element={<StudentFees />} />
             <Route path="notifications" element={<StudentNotifications />} />
             <Route path="payment-history" element={<PaymentHistory />} />
+            <Route path="receipts" element={<Receipts />} />
+            <Route path="ai-assistant" element={<AIAssistant />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>
       </AuthProvider>
