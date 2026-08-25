@@ -20,10 +20,14 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, selectedRole) => {
     try {
       const response = await api.post('/auth/login', { email, password });
       const { token, role, userId, mustChangePassword } = response.data;
+      
+      if (selectedRole && role !== selectedRole) {
+        throw new Error(`Account found, but it is not ${selectedRole === 'ROLE_ADMIN' ? 'an Admin' : 'a Student'} account.`);
+      }
       
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);

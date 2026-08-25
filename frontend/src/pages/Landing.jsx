@@ -15,6 +15,12 @@ const Landing = () => {
           </div>
           <span className="logo-text">AI [EduFlux]</span>
         </div>
+
+        <div className="badge" style={{ marginBottom: 0, margin: '0 auto', display: 'flex' }}>
+          <span className="badge-dot"></span>
+          FREE AI TUITION FEE MANAGEMENT SOFTWARE
+        </div>
+
         <nav className="landing-nav">
           <a href="#features">Features</a>
           <a href="#solutions">Solutions</a>
@@ -24,19 +30,11 @@ const Landing = () => {
       </header>
 
       <main className="landing-main">
-        <div className="badge">
-          <span className="badge-dot"></span>
-          FREE AI TUITION MANAGEMENT SOFTWARE FOR INDIA
-        </div>
-        
+
         <h1 className="hero-title">
-          Free AI Tuition Management Software — Smart Fees,<br/>
-          Automated Receipts & Payment History <span className="highlight-text">for Coaching Centres</span>
+          Free AI Tuition Fee Management Software<br />
+          Smart Fee, Automated Receipts & Payment History <span className="highlight-text">for Coaching Centres</span>
         </h1>
-        
-        <p className="hero-subtitle">
-          <strong>AI [EduFlux]</strong> is a free, intelligent tuition fee management platform for India and beyond. Streamline your entire fee collection process. Manage student fee structures, track payments in real-time, generate automated PDF receipts, and get instant analytics that keep owners, admins, and students perfectly in sync. Start free as a solo tutor; scale effortlessly without changing products.
-        </p>
 
         <div className="hero-actions">
           <Link to="/auth" className="primary-btn">
@@ -46,7 +44,11 @@ const Landing = () => {
             Explore Features &rarr;
           </a>
         </div>
-        
+
+        <p className="hero-subtitle">
+          <strong>AI [EduFlux]</strong> is a free, intelligent tuition fee management platform for India and beyond. Streamline your entire fee collection process. Manage student fee structures, track payments in real-time, generate automated PDF receipts, and get instant analytics that keep owners, admins, and students perfectly in sync. Start free as a solo tutor; scale effortlessly without changing products.
+        </p>
+
         {/* Features Section */}
         <section id="features" className="content-section features-section">
           <h2>Platform Features</h2>

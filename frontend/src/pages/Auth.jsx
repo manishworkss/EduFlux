@@ -9,22 +9,23 @@ const Auth = () => {
     return sessionStorage.getItem('authMode') !== 'signup';
   });
   const [showOtpView, setShowOtpView] = useState(false);
-  
+
   // Form fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [otp, setOtp] = useState('');
-  
+  const [loginRole, setLoginRole] = useState('ROLE_ADMIN');
+
   // UI States
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   // Admin and Student specific dummy credentials can be added to standard logins, 
   // but we removed the role selector so no need to auto-fill based on role here.
-  
+
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -33,9 +34,9 @@ const Auth = () => {
     setError('');
     setLoading(true);
     try {
-      await login(email, password);
+      await login(email, password, loginRole);
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password');
+      setError(err.message || err.response?.data?.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
@@ -72,7 +73,7 @@ const Auth = () => {
       // The verify endpoint logs the user in automatically and returns auth token + role
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('role', response.data.role);
-      
+
       // We need to trigger the AuthContext to recognize the new token.
       // Easiest way is to force a reload which restores state from localStorage, 
       // or we can call a context method. We'll just manually navigate and let the app reload context if needed, 
@@ -83,7 +84,7 @@ const Auth = () => {
       } else {
         window.location.href = response.data.role === 'ROLE_ADMIN' ? '/admin/dashboard' : '/student/dashboard';
       }
-      
+
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid OTP');
     } finally {
@@ -113,16 +114,16 @@ const Auth = () => {
             </div>
             <h1>AI [EduFlux]</h1>
           </div>
-          <p className="auth-subtitle">AI-POWERED TUITION MANAGEMENT SYSTEM</p>
-          
+          <p className="auth-subtitle">AI-POWERED TUITION FEE MANAGEMENT SYSTEM</p>
+
           <div className="auth-features">
             <h2>{isLogin ? "Welcome Back" : "Join AI EduFlux"}</h2>
             <p>
-              {isLogin 
+              {isLogin
                 ? "Access your centralized tuition intelligence platform. Streamline your fees and analytics with AI EduFlux."
                 : "Unlock the full potential of your tuition center's data with our advanced management platform."}
             </p>
-            
+
             <ul className="feature-list">
               <li><span className="check-icon">✓</span> Real-Time Fee Tracking</li>
               <li><span className="check-icon">✓</span> Automated Notifications</li>
@@ -135,22 +136,22 @@ const Auth = () => {
       {/* Right Panel - Light Theme */}
       <div className="auth-right">
         <div className="auth-form-container">
-          
+
           {showOtpView ? (
             <>
               <h2>Verify Your Email</h2>
               <p style={{ color: '#64748b', marginBottom: '24px' }}>
                 We've sent a verification code to <strong>{email}</strong>
               </p>
-              
+
               {error && <div className="error-message">{error}</div>}
               {successMsg && <div className="success-message" style={{ color: '#059669', background: '#d1fae5', padding: '12px', borderRadius: '8px', marginBottom: '16px' }}>{successMsg}</div>}
-              
+
               <form onSubmit={handleOtpSubmit} className="auth-form">
                 <div className="form-group">
                   <label>One-Time Password (OTP)</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     placeholder="Enter 6-digit OTP"
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
@@ -161,12 +162,12 @@ const Auth = () => {
                     Tip: For local testing, check your backend console logs for the OTP!
                   </small>
                 </div>
-                
+
                 <button type="submit" className="submit-btn" disabled={loading}>
                   {loading ? "Verifying..." : "Verify & Create Account"}
                 </button>
               </form>
-              
+
               <div className="toggle-auth">
                 <span style={{ cursor: 'pointer', color: '#3b82f6' }} onClick={() => setShowOtpView(false)}>
                   ← Back to Signup
@@ -181,15 +182,15 @@ const Auth = () => {
                   Note: This registration is for Admin use only. Students will be provided accounts by their administrator.
                 </p>
               )}
-              
+
               {error && <div className="error-message">{error}</div>}
-              
+
               <form onSubmit={isLogin ? handleLoginSubmit : handleSignupSubmit} className="auth-form">
                 {!isLogin && (
                   <div className="form-group">
                     <label>Full Name</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       placeholder="John Doe"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
@@ -197,12 +198,26 @@ const Auth = () => {
                     />
                   </div>
                 )}
-                
+
+                {isLogin && (
+                  <div className="form-group">
+                    <label>Role</label>
+                    <select
+                      value={loginRole}
+                      onChange={(e) => setLoginRole(e.target.value)}
+                      className="role-select"
+                    >
+                      <option value="ROLE_ADMIN">Admin (Staff)</option>
+                      <option value="ROLE_STUDENT">Student</option>
+                    </select>
+                  </div>
+                )}
+
                 <div className="form-group">
-                  <label>Email Address</label>
-                  <input 
-                    type="email" 
-                    placeholder="name@company.com"
+                  <label>{(isLogin && loginRole === 'ROLE_STUDENT') ? "Student ID" : "Email Address"}</label>
+                  <input
+                    type={(isLogin && loginRole === 'ROLE_STUDENT') ? "text" : "email"}
+                    placeholder={(isLogin && loginRole === 'ROLE_STUDENT') ? "Enter your Student ID" : "name@company.com"}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -215,15 +230,15 @@ const Auth = () => {
                     {isLogin && <a href="#" className="forgot-password">Forgot Password?</a>}
                   </div>
                   <div className="password-input-wrapper">
-                    <input 
-                      type={showPassword ? "text" : "password"} 
+                    <input
+                      type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
-                    <span 
-                      className="eye-icon" 
+                    <span
+                      className="eye-icon"
                       onClick={() => setShowPassword(!showPassword)}
                       style={{ cursor: 'pointer' }}
                     >
