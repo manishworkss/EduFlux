@@ -7,6 +7,7 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -29,14 +30,21 @@ public class Student {
     @Column(unique = true)
     private String enrollmentNumber;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "course_id")
-    private Course course;
+    private String personalEmail;
+    
+    private String courseName;
+    
+    private BigDecimal monthlyFee;
 
     private Integer semester;
 
     private String phone;
     private String address;
+    private String parentName;
+    private String parentPhone;
+    private String pincode;
+    private String state;
+    
     private LocalDate admissionDate;
 
     @CreationTimestamp

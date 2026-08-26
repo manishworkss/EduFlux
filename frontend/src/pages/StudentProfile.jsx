@@ -17,7 +17,7 @@ const StudentProfile = () => {
           </div>
           <div className="profile-header-info">
             <h2>{profile.user?.name}</h2>
-            <p>Enrollment Number: {profile.enrollmentNumber}</p>
+            <p>Enrollment Number / Username: {profile.enrollmentNumber}</p>
           </div>
         </div>
 
@@ -25,15 +25,11 @@ const StudentProfile = () => {
         <div className="profile-grid">
           <div className="profile-field">
             <label>Course</label>
-            <div className="profile-field-value">{profile.course?.courseName}</div>
+            <div className="profile-field-value">{profile.courseName || 'N/A'}</div>
           </div>
           <div className="profile-field">
-            <label>Current Semester</label>
-            <div className="profile-field-value">Semester {profile.currentSemester}</div>
-          </div>
-          <div className="profile-field">
-            <label>Academic Year</label>
-            <div className="profile-field-value">{profile.academicYear}</div>
+            <label>Monthly Fee</label>
+            <div className="profile-field-value">{profile.monthlyFee ? `₹${profile.monthlyFee}` : 'N/A'}</div>
           </div>
           <div className="profile-field">
             <label>Status</label>
@@ -44,16 +40,37 @@ const StudentProfile = () => {
         <h3 style={{ color: '#0f172a', margin: '32px 0 24px 0' }}>Personal Information</h3>
         <div className="profile-grid">
           <div className="profile-field">
-            <label>Email Address</label>
-            <div className="profile-field-value">{profile.user?.email}</div>
+            <label>Mobile Number</label>
+            <div className="profile-field-value">{profile.phone || 'N/A'}</div>
           </div>
           <div className="profile-field">
-            <label>Phone Number</label>
-            <div className="profile-field-value">{profile.phone || 'N/A'}</div>
+            <label>Email Address</label>
+            <div className="profile-field-value">{profile.personalEmail || 'N/A'}</div>
           </div>
           <div className="profile-field" style={{ gridColumn: '1 / -1' }}>
             <label>Address</label>
-            <div className="profile-field-value">{profile.address || 'N/A'}</div>
+            <div className="profile-field-value">
+              {profile.address ? (
+                <>
+                  {profile.address}
+                  <br />
+                  {profile.state && <span>{profile.state}</span>}
+                  {profile.pincode && <span> - {profile.pincode}</span>}
+                </>
+              ) : 'N/A'}
+            </div>
+          </div>
+        </div>
+
+        <h3 style={{ color: '#0f172a', margin: '32px 0 24px 0' }}>Guardian Information</h3>
+        <div className="profile-grid">
+          <div className="profile-field">
+            <label>Parent / Guardian Name</label>
+            <div className="profile-field-value">{profile.parentName || 'N/A'}</div>
+          </div>
+          <div className="profile-field">
+            <label>Parent's Mobile Number</label>
+            <div className="profile-field-value">{profile.parentPhone || 'N/A'}</div>
           </div>
         </div>
       </div>

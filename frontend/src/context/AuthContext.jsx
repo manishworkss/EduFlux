@@ -13,9 +13,10 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
     const userId = localStorage.getItem('userId');
+    const className = localStorage.getItem('className');
 
     if (token && role && userId) {
-      setUser({ role, userId });
+      setUser({ role, userId, className });
     }
     setLoading(false);
   }, []);
@@ -23,7 +24,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password, selectedRole) => {
     try {
       const response = await api.post('/auth/login', { email, password });
-      const { token, role, userId, mustChangePassword } = response.data;
+      const { token, role, userId, mustChangePassword, className } = response.data;
       
       if (selectedRole && role !== selectedRole) {
         throw new Error(`Account found, but it is not ${selectedRole === 'ROLE_ADMIN' ? 'an Admin' : 'a Student'} account.`);
@@ -32,8 +33,11 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
       localStorage.setItem('userId', userId);
+      if (className) {
+        localStorage.setItem('className', className);
+      }
       
-      setUser({ role, userId });
+      setUser({ role, userId, className });
       
       if (mustChangePassword) {
         navigate('/force-change-password');
@@ -52,6 +56,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     localStorage.removeItem('userId');
+    localStorage.removeItem('className');
     setUser(null);
     navigate('/');
   };

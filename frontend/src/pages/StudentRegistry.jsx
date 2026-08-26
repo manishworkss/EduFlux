@@ -1,14 +1,26 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import './StudentRegistry.css';
 
 const StudentRegistry = () => {
   const [students, setStudents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [newEmail, setNewEmail] = useState('');
+  const [createdStudentId, setCreatedStudentId] = useState('');
   const [tempPassword, setTempPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Form States
+  const [newName, setNewName] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [newParentName, setNewParentName] = useState('');
+  const [newParentPhone, setNewParentPhone] = useState('');
+  const [newAddress, setNewAddress] = useState('');
+  const [newPincode, setNewPincode] = useState('');
+  const [newState, setNewState] = useState('');
+  const [newCourseName, setNewCourseName] = useState('');
+  const [newMonthlyFee, setNewMonthlyFee] = useState('');
 
   useEffect(() => {
     fetchStudents();
@@ -31,11 +43,25 @@ const StudentRegistry = () => {
     try {
       const response = await api.post('/admin/dashboard/students', {
         name: newName,
-        email: newEmail
+        phone: newPhone,
+        email: newEmail,
+        parentName: newParentName,
+        parentPhone: newParentPhone,
+        address: newAddress,
+        pincode: newPincode,
+        state: newState,
+        courseName: newCourseName,
+        monthlyFee: parseFloat(newMonthlyFee)
       });
       setTempPassword(response.data.temporaryPassword);
-      setNewName('');
-      setNewEmail('');
+      setCreatedStudentId(response.data.student.enrollmentNumber);
+      
+      // Clear form
+      setNewName(''); setNewPhone(''); setNewEmail('');
+      setNewParentName(''); setNewParentPhone('');
+      setNewAddress(''); setNewPincode(''); newState('');
+      setNewCourseName(''); setNewMonthlyFee('');
+      
       fetchStudents();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create student');
@@ -47,69 +73,117 @@ const StudentRegistry = () => {
   const closeModals = () => {
     setIsModalOpen(false);
     setTempPassword('');
+    setCreatedStudentId('');
     setError('');
   };
 
   return (
-    <div>
-      <h2>Student Registry</h2>
-      <button 
-        onClick={() => setIsModalOpen(true)}
-        style={{ marginBottom: '20px', padding: '10px', background: '#3498db', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-      >
-        + Register Student
-      </button>
+    <div className="registry-container">
+      <div className="registry-header">
+        <h2>Student Registry</h2>
+        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
+          + Register Student
+        </button>
+      </div>
 
-      {/* Basic Modal implementation */}
+      {/* Modal */}
       {(isModalOpen || tempPassword) && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
-          backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', 
-          justifyContent: 'center', alignItems: 'center', zIndex: 1000
-        }}>
-          <div style={{ background: '#fff', padding: '32px', borderRadius: '8px', width: '400px', maxWidth: '90%' }}>
+        <div className="modal-overlay">
+          <div className="modal-content">
             {tempPassword ? (
-              <div>
-                <h3 style={{ color: '#10b981', marginTop: 0 }}>Student Created Successfully!</h3>
+              <div className="success-container">
+                <div className="success-icon">✓</div>
+                <h3 className="modal-title" style={{ borderBottom: 'none', marginBottom: '8px' }}>Student Created Successfully!</h3>
                 <p>Please share these credentials securely with the student:</p>
-                <div style={{ background: '#f1f5f9', padding: '16px', borderRadius: '4px', marginBottom: '24px' }}>
-                  <p style={{ margin: '0 0 8px 0' }}><strong>Temporary Password:</strong></p>
-                  <code style={{ fontSize: '1.2rem', color: '#0f172a' }}>{tempPassword}</code>
+                
+                <div className="success-card">
+                  <div className="credential-item">
+                    <span className="credential-label">Student ID (Username)</span>
+                    <span className="credential-value" style={{ color: '#3b82f6' }}>{createdStudentId}</span>
+                  </div>
+                  <div className="credential-item">
+                    <span className="credential-label">Temporary Password</span>
+                    <span className="credential-value">{tempPassword}</span>
+                  </div>
                 </div>
-                <p style={{ fontSize: '0.875rem', color: '#64748b' }}>They will be prompted to change this upon their first login.</p>
-                <button onClick={closeModals} style={{ width: '100%', padding: '12px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Close</button>
+                
+                <p style={{ color: '#ef4444', fontSize: '0.9rem', marginBottom: '32px' }}>
+                  Ensure they select the "Student" role on the login page.
+                </p>
+                <button className="btn-primary" style={{ width: '100%', padding: '14px' }} onClick={closeModals}>
+                  Done
+                </button>
               </div>
             ) : (
               <div>
-                <h3 style={{ marginTop: 0 }}>Create New Student Account</h3>
-                {error && <div style={{ color: '#ef4444', background: '#fee2e2', padding: '8px', borderRadius: '4px', marginBottom: '16px' }}>{error}</div>}
+                <h3 className="modal-title">Create New Student Account</h3>
+                {error && <div className="error-banner">{error}</div>}
                 
                 <form onSubmit={handleRegisterSubmit}>
-                  <div style={{ marginBottom: '16px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', fontWeight: 500 }}>Full Name</label>
-                    <input 
-                      type="text" 
-                      value={newName}
-                      onChange={(e) => setNewName(e.target.value)}
-                      required
-                      style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '4px', boxSizing: 'border-box' }}
-                    />
-                  </div>
-                  <div style={{ marginBottom: '24px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', fontWeight: 500 }}>Email Address</label>
-                    <input 
-                      type="email" 
-                      value={newEmail}
-                      onChange={(e) => setNewEmail(e.target.value)}
-                      required
-                      style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '4px', boxSizing: 'border-box' }}
-                    />
+                  
+                  <div className="form-grid">
+                    {/* Column 1 */}
+                    <div className="form-section">
+                      <h4 className="section-title">Personal Details</h4>
+                      
+                      <div className="input-group">
+                        <label>Student Full Name*</label>
+                        <input type="text" value={newName} onChange={e => setNewName(e.target.value)} required placeholder="e.g. John Doe" />
+                      </div>
+                      <div className="input-group">
+                        <label>Student Mobile Number*</label>
+                        <input type="tel" value={newPhone} onChange={e => setNewPhone(e.target.value)} required placeholder="+91" />
+                      </div>
+                      <div className="input-group">
+                        <label>Email Address (Optional)</label>
+                        <input type="email" value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="student@example.com" />
+                      </div>
+
+                      <h4 className="section-title" style={{ marginTop: '16px' }}>Academic & Fee Details</h4>
+                      <div className="input-group">
+                        <label>Course Name*</label>
+                        <input type="text" value={newCourseName} onChange={e => setNewCourseName(e.target.value)} required placeholder="e.g. Class 10th Science" />
+                      </div>
+                      <div className="input-group">
+                        <label>Monthly Fee (₹)*</label>
+                        <input type="number" value={newMonthlyFee} onChange={e => setNewMonthlyFee(e.target.value)} required placeholder="1500" />
+                      </div>
+                    </div>
+
+                    {/* Column 2 */}
+                    <div className="form-section">
+                      <h4 className="section-title">Guardian & Address Details</h4>
+                      
+                      <div className="input-group">
+                        <label>Parent/Guardian's Name*</label>
+                        <input type="text" value={newParentName} onChange={e => setNewParentName(e.target.value)} required placeholder="e.g. Jane Doe" />
+                      </div>
+                      <div className="input-group">
+                        <label>Parent's Mobile Number*</label>
+                        <input type="tel" value={newParentPhone} onChange={e => setNewParentPhone(e.target.value)} required placeholder="+91" />
+                      </div>
+                      <div className="input-group">
+                        <label>Full Address*</label>
+                        <textarea value={newAddress} onChange={e => setNewAddress(e.target.value)} required placeholder="Enter complete street address..." />
+                      </div>
+                      
+                      <div className="input-row">
+                        <div className="input-group">
+                          <label>State*</label>
+                          <input type="text" value={newState} onChange={e => setNewState(e.target.value)} required placeholder="e.g. Maharashtra" />
+                        </div>
+                        <div className="input-group">
+                          <label>Pincode*</label>
+                          <input type="text" value={newPincode} onChange={e => setNewPincode(e.target.value)} required placeholder="e.g. 400001" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <button type="button" onClick={closeModals} style={{ flex: 1, padding: '10px', background: '#f1f5f9', color: '#475569', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Cancel</button>
-                    <button type="submit" disabled={loading} style={{ flex: 1, padding: '10px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                      {loading ? 'Creating...' : 'Create Account'}
+                  <div className="modal-actions">
+                    <button type="button" className="btn-secondary" onClick={closeModals}>Cancel</button>
+                    <button type="submit" className="btn-submit" disabled={loading}>
+                      {loading ? 'Registering Student...' : 'Complete Registration'}
                     </button>
                   </div>
                 </form>
@@ -119,25 +193,33 @@ const StudentRegistry = () => {
         </div>
       )}
 
-      <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white' }}>
+      <table className="modern-table">
         <thead>
-          <tr style={{ background: '#ecf0f1', textAlign: 'left' }}>
-            <th style={{ padding: '12px' }}>Enrollment No</th>
-            <th style={{ padding: '12px' }}>Name</th>
-            <th style={{ padding: '12px' }}>Email</th>
-            <th style={{ padding: '12px' }}>Course</th>
+          <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Course</th>
+            <th>Monthly Fee</th>
+            <th>Parent Name</th>
+            <th>Mobile</th>
           </tr>
         </thead>
         <tbody>
           {students.map(student => (
-            <tr key={student.studentId} style={{ borderBottom: '1px solid #eee' }}>
-              <td style={{ padding: '12px' }}>{student.enrollmentNumber}</td>
-              <td style={{ padding: '12px' }}>{student.user?.name}</td>
-              <td style={{ padding: '12px' }}>{student.user?.email}</td>
-              <td style={{ padding: '12px' }}>{student.course?.courseName}</td>
+            <tr key={student.studentId}>
+              <td style={{ fontWeight: '600', color: '#3b82f6' }}>{student.enrollmentNumber}</td>
+              <td>{student.user?.name}</td>
+              <td>{student.courseName || '-'}</td>
+              <td>{student.monthlyFee ? `₹${student.monthlyFee}` : '-'}</td>
+              <td>{student.parentName || '-'}</td>
+              <td>{student.phone || '-'}</td>
             </tr>
           ))}
-          {students.length === 0 && <tr><td colSpan="4" style={{ padding: '12px', textAlign: 'center' }}>No students found.</td></tr>}
+          {students.length === 0 && (
+            <tr>
+              <td colSpan="6" className="empty-state">No students registered yet. Click "Register Student" to add one.</td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

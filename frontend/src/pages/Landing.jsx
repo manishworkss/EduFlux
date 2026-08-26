@@ -23,6 +23,7 @@ const Landing = () => {
 
         <nav className="landing-nav">
           <a href="#features">Features</a>
+          <a href="#roles">Roles</a>
           <a href="#solutions">Solutions</a>
 
           <Link to="/auth" className="nav-signin-btn">Sign In</Link>
@@ -68,6 +69,24 @@ const Landing = () => {
               <div className="feature-icon">🧾</div>
               <h3>Automated Receipts</h3>
               <p>Generate instant, professional PDF receipts for every transaction to share directly with parents.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Roles Section */}
+        <section id="roles" className="content-section roles-section">
+          <h2>Platform Roles & Permissions</h2>
+          <p className="section-subtitle">A secure, multi-tenant ecosystem for everyone</p>
+          <div className="solutions-grid">
+            <div className="solution-card role-card">
+              <div className="feature-icon" style={{ marginBottom: '1rem', fontSize: '2.5rem' }}>👨‍🏫</div>
+              <h3>Admin (Coaching Owner)</h3>
+              <p>The Admin holds full control over the system. They can create and manage fee structures, register new student accounts, record fee payments, generate receipts, and view comprehensive revenue analytics.</p>
+            </div>
+            <div className="solution-card role-card">
+              <div className="feature-icon" style={{ marginBottom: '1rem', fontSize: '2.5rem' }}>🎓</div>
+              <h3>Student / Parent</h3>
+              <p>Students and parents have secure, restricted access. They can log in using their unique Student ID to view their personal profile, check their assigned courses, track payment history, and monitor pending dues.</p>
             </div>
           </div>
         </section>

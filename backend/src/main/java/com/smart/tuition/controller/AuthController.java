@@ -58,11 +58,15 @@ public class AuthController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String jwtToken = jwtUtil.generateToken(userDetails);
 
+        User user = userRepository.findById(userDetails.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
         AuthResponse response = AuthResponse.builder()
                 .token(jwtToken)
                 .userId(userDetails.getUserId())
                 .role(Role.valueOf(userDetails.getRole()))
                 .mustChangePassword(userDetails.getMustChangePassword())
+                .className(user.getClassName())
                 .build();
 
         return ResponseEntity.ok(response);
@@ -127,6 +131,7 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         user.setRole(Role.ROLE_ADMIN);
         user.setMustChangePassword(false);
+        user.setClassName(signupRequest.getClassName());
         
         user = userRepository.save(user);
 
@@ -145,6 +150,7 @@ public class AuthController {
                 .userId(userDetails.getUserId())
                 .role(Role.valueOf(userDetails.getRole()))
                 .mustChangePassword(userDetails.getMustChangePassword())
+                .className(user.getClassName())
                 .build();
 
         return ResponseEntity.ok(response);

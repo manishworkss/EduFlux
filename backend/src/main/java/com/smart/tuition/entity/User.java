@@ -25,8 +25,7 @@ public class User {
     @NotBlank(message = "Name is required")
     private String name;
 
-    @Email(message = "Invalid email format")
-    @NotBlank(message = "Email is required")
+    @NotBlank(message = "Username/Email is required")
     @Column(unique = true, nullable = false)
     private String email;
 
@@ -40,6 +39,8 @@ public class User {
 
     @Column(nullable = false)
     private Boolean mustChangePassword = false;
+
+    private String className;
 
     @CreationTimestamp
     @Column(updatable = false)

@@ -19,4 +19,6 @@ public class SignupRequest {
     @NotBlank(message = "Password is required")
     private String password;
 
+    @NotBlank(message = "Class Name is required")
+    private String className;
 }

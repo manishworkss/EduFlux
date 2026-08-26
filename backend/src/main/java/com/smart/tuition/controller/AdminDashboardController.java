@@ -56,20 +56,43 @@ public class AdminDashboardController {
     @Data
     public static class CreateStudentRequest {
         private String name;
-        private String email;
+        private String phone;
+        private String email; // optional personal email
+        private String parentName;
+        private String parentPhone;
+        private String address;
+        private String pincode;
+        private String state;
+        private String courseName;
+        private java.math.BigDecimal monthlyFee;
     }
 
     @PostMapping("/students")
     public ResponseEntity<?> createStudent(@RequestBody CreateStudentRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use");
+        String namePart = request.getName() != null && request.getName().length() >= 4 
+                ? request.getName().substring(0, 4) 
+                : request.getName();
+        String phonePart = request.getPhone() != null && request.getPhone().length() >= 4 
+                ? request.getPhone().substring(0, 4) 
+                : request.getPhone();
+        
+        // Capitalize first letter of name just in case
+        if (namePart != null && !namePart.isEmpty()) {
+            namePart = namePart.substring(0, 1).toUpperCase() + namePart.substring(1);
         }
+        
+        String tempPassword = namePart + "@" + phonePart;
 
-        String tempPassword = "Edf@" + (1000 + new Random().nextInt(9000));
+        // Use enrollment number as login ID (email field in User)
+        String enrollmentNumber;
+        Random random = new Random();
+        do {
+            enrollmentNumber = "2601010" + String.format("%04d", random.nextInt(10000));
+        } while (userRepository.existsByEmail(enrollmentNumber));
 
         User user = new User();
         user.setName(request.getName());
-        user.setEmail(request.getEmail());
+        user.setEmail(enrollmentNumber); // Set email to Enrollment ID so they login with it
         user.setPassword(passwordEncoder.encode(tempPassword));
         user.setRole(Role.ROLE_STUDENT);
         user.setMustChangePassword(true);
@@ -78,7 +101,16 @@ public class AdminDashboardController {
 
         Student student = new Student();
         student.setUser(user);
-        student.setEnrollmentNumber("STU" + System.currentTimeMillis());
+        student.setEnrollmentNumber(enrollmentNumber);
+        student.setPersonalEmail(request.getEmail());
+        student.setPhone(request.getPhone());
+        student.setParentName(request.getParentName());
+        student.setParentPhone(request.getParentPhone());
+        student.setAddress(request.getAddress());
+        student.setPincode(request.getPincode());
+        student.setState(request.getState());
+        student.setCourseName(request.getCourseName());
+        student.setMonthlyFee(request.getMonthlyFee());
         studentRepository.save(student);
 
         Map<String, Object> response = new HashMap<>();

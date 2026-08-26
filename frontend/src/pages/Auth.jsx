@@ -14,6 +14,7 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [className, setClassName] = useState('');
   const [otp, setOtp] = useState('');
   const [loginRole, setLoginRole] = useState('ROLE_ADMIN');
 
@@ -50,7 +51,8 @@ const Auth = () => {
       await api.post('/auth/signup', {
         name: fullName,
         email,
-        password
+        password,
+        className
       });
       setShowOtpView(true);
       setSuccessMsg(`OTP has been sent to ${email}. Please check your inbox.`);
@@ -70,9 +72,13 @@ const Auth = () => {
         email,
         otp
       });
-      // The verify endpoint logs the user in automatically and returns auth token + role
+      // The verify endpoint logs the user in automatically and returns auth token + role + className
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('role', response.data.role);
+      localStorage.setItem('userId', response.data.userId);
+      if (response.data.className) {
+        localStorage.setItem('className', response.data.className);
+      }
 
       // We need to trigger the AuthContext to recognize the new token.
       // Easiest way is to force a reload which restores state from localStorage, 
@@ -82,7 +88,7 @@ const Auth = () => {
       if (response.data.mustChangePassword) {
         window.location.href = '/force-change-password';
       } else {
-        window.location.href = response.data.role === 'ROLE_ADMIN' ? '/admin/dashboard' : '/student/dashboard';
+        window.location.href = response.data.role === 'ROLE_ADMIN' ? '/admin/profile' : '/student/dashboard';
       }
 
     } catch (err) {
@@ -194,6 +200,19 @@ const Auth = () => {
                       placeholder="John Doe"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
+                      required={!isLogin}
+                    />
+                  </div>
+                )}
+
+                {!isLogin && (
+                  <div className="form-group">
+                    <label>Class Name<span style={{color: 'red'}}>*</span></label>
+                    <input
+                      type="text"
+                      placeholder="e.g. new"
+                      value={className}
+                      onChange={(e) => setClassName(e.target.value)}
                       required={!isLogin}
                     />
                   </div>

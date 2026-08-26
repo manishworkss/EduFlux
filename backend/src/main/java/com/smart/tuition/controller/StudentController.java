@@ -5,7 +5,6 @@ import com.smart.tuition.entity.User;
 import com.smart.tuition.entity.enums.Role;
 import com.smart.tuition.repository.StudentRepository;
 import com.smart.tuition.repository.UserRepository;
-import com.smart.tuition.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,7 +20,6 @@ public class StudentController {
 
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
-    private final CourseRepository courseRepository;
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping
@@ -43,8 +41,6 @@ public class StudentController {
 
         // Map relationships
         studentDetails.setUser(savedUser);
-        studentDetails.setCourse(courseRepository.findById(studentDetails.getCourse().getCourseId())
-                .orElseThrow(() -> new RuntimeException("Course not found")));
 
         return ResponseEntity.ok(studentRepository.save(studentDetails));
     }

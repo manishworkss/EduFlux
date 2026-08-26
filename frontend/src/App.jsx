@@ -20,6 +20,7 @@ import CourseManagement from './pages/CourseManagement';
 import FeeStructureManagement from './pages/FeeStructureManagement';
 import StudentRegistry from './pages/StudentRegistry';
 import AdminAIAssistant from './pages/AdminAIAssistant';
+import AdminProfile from './pages/AdminProfile';
 
 import StudentLayout from './components/StudentLayout';
 import StudentDashboard from './pages/StudentDashboard';
@@ -54,6 +55,7 @@ function App() {
             <Route path="fee-structures" element={<FeeStructureManagement />} />
             <Route path="students" element={<StudentRegistry />} />
             <Route path="ai-assistant" element={<AdminAIAssistant />} />
+            <Route path="profile" element={<AdminProfile />} />
           </Route>
           <Route 
             path="/student" 
