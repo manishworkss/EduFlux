@@ -1,0 +1,5 @@
+graph TD
+    User -->|Email, Password| 1.1(Validate Credentials)
+    1.1 -->|Query User| DB[(Database)]
+    DB -->|Hash Match| 1.2(Generate JWT Token)
+    1.2 -->|Return Token| User

@@ -1,0 +1,36 @@
+classDiagram
+    class User {
+        +Long id
+        +String name
+        +String email
+        +String password
+        +String role
+        +login()
+    }
+    class Student {
+        +Long id
+        +String phone
+        +Long adminId
+    }
+    class FeeStructure {
+        +Long id
+        +String name
+        +Double amount
+        +String frequency
+    }
+    class StudentFee {
+        +Long id
+        +Date dueDate
+        +String status
+    }
+    class Payment {
+        +Long id
+        +Double amountPaid
+        +Date paymentDate
+        +String razorpayPaymentId
+        +String razorpayOrderId
+    }
+    User <|-- Student
+    Student "1" -- "*" StudentFee : has
+    FeeStructure "1" -- "*" StudentFee : mapped to
+    StudentFee "1" -- "*" Payment : triggers

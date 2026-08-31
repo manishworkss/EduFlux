@@ -1,0 +1,37 @@
+erDiagram
+    ADMIN ||--o{ STUDENT : manages
+    ADMIN ||--o{ FEE_STRUCTURE : creates
+    FEE_STRUCTURE ||--o{ STUDENT_FEE : assigned_as
+    STUDENT ||--o{ STUDENT_FEE : owes
+    STUDENT_FEE ||--o{ PAYMENT : has
+    STUDENT {
+        bigint id PK
+        string email
+        string name
+        string phone
+        string role
+        bigint admin_id FK
+    }
+    FEE_STRUCTURE {
+        bigint id PK
+        string name
+        double amount
+        string frequency
+        bigint admin_id FK
+    }
+    STUDENT_FEE {
+        bigint id PK
+        bigint student_id FK
+        bigint fee_structure_id FK
+        date due_date
+        string status
+    }
+    PAYMENT {
+        bigint id PK
+        bigint student_fee_id FK
+        double amount_paid
+        date payment_date
+        string razorpay_id
+        string razorpay_order_id
+        string status
+    }

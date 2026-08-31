@@ -1,0 +1,18 @@
+flowchart LR
+    Admin([Admin])
+    subgraph EduFlux System
+        UC1(Login / Logout)
+        UC2(Manage Students)
+        UC3(Create Fee Structures)
+        UC4(Assign Fees)
+        UC5(View Payments)
+        UC6(View Analytics Dashboard)
+        UC7(Chat with AI Assistant)
+    end
+    Admin --> UC1
+    Admin --> UC2
+    Admin --> UC3
+    Admin --> UC4
+    Admin --> UC5
+    Admin --> UC6
+    Admin --> UC7

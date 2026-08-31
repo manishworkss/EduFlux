@@ -1,0 +1,18 @@
+flowchart LR
+    Student([Student])
+    subgraph EduFlux System
+        UC1(Login / Logout)
+        UC2(View Assigned Fees)
+        UC3(Pay Fees Online)
+        UC4(Download Receipts)
+        UC5(View Payment History)
+        UC6(Chat with AI Assistant)
+        UC7(Razorpay)
+    end
+    Student --> UC1
+    Student --> UC2
+    Student --> UC3
+    Student --> UC4
+    Student --> UC5
+    Student --> UC6
+    UC3 -.-> UC7

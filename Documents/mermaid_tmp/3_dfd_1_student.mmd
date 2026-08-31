@@ -1,0 +1,11 @@
+graph TD
+    Student -->|Login Credentials| 1.0(Authentication)
+    1.0 -->|Token| Student
+    Student -->|Request Dashboard| 2.0(Fetch Pending Fees)
+    DB[(Database)] -->|Return Dues| 2.0
+    2.0 -->|Display Dues| Student
+    Student -->|Initiate Payment| 3.0(Process Payment)
+    3.0 <-->|Gateway Comm| Razorpay
+    3.0 -->|Save Transaction| DB
+    DB -->|Fetch History| 4.0(Generate Receipt)
+    4.0 -->|Download PDF| Student

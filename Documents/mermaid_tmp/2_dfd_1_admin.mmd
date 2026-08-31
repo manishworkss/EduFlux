@@ -1,0 +1,11 @@
+graph TD
+    Admin -->|Login Credentials| 1.0(Authentication)
+    1.0 -->|Token| Admin
+    Admin -->|Student Details| 2.0(Manage Students)
+    2.0 -->|Save Data| DB[(Database)]
+    Admin -->|Fee Configurations| 3.0(Manage Fee Structures)
+    3.0 -->|Save Config| DB
+    Admin -->|Assign Fees| 4.0(Assign to Students)
+    4.0 -->|Update Due Dates| DB
+    DB -->|Read Data| 5.0(Generate Analytics)
+    5.0 -->|View Charts| Admin

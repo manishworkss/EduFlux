@@ -1,0 +1,10 @@
+stateDiagram-v2
+    [*] --> Login
+    Login --> Dashboard : Valid
+    Dashboard --> SelectMenu
+    SelectMenu --> ManageStudents
+    SelectMenu --> SetupFee
+    SelectMenu --> Analytics
+    SetupFee --> FillFeeDetails
+    FillFeeDetails --> SaveFee : Submit
+    SaveFee --> [*]

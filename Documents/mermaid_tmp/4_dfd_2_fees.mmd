@@ -1,0 +1,6 @@
+graph TD
+    Admin -->|Input Fee Info| 3.1(Validate Inputs)
+    3.1 -->|Valid Info| 3.2(Create Fee Record)
+    3.2 -->|Store Record| DB[(Database)]
+    DB -->|Fetch Templates| 3.3(List Fee Structures)
+    3.3 -->|Display| Admin

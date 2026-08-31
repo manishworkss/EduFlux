@@ -1,0 +1,7 @@
+graph TD
+    A[Admin] -->|Manage Students, Fees| B((EduFlux System))
+    B -->|Analytics & Reports| A
+    C[Student] -->|Pay Fees, View History| B
+    B -->|Receipts, Reminders| C
+    B <-->|Process Payments| D[Razorpay Gateway]
+    B <-->|AI Insights| E[Gemini AI]

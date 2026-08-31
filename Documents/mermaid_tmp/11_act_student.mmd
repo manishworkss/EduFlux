@@ -1,0 +1,11 @@
+stateDiagram-v2
+    [*] --> Login
+    Login --> StudentDashboard : Valid
+    StudentDashboard --> CheckPendingDues
+    CheckPendingDues --> ClickPayNow
+    ClickPayNow --> Gateway : Redirect
+    Gateway --> Success : Verified
+    Gateway --> Failed : Failed
+    Success --> DownloadReceipt
+    DownloadReceipt --> [*]
+    Failed --> CheckPendingDues
