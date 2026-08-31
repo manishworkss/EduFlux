@@ -10,6 +10,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+import com.smart.tuition.entity.User;
+
 @Entity
 @Table(name = "fee_structures")
 @Data
@@ -39,6 +41,10 @@ public class FeeStructure {
     private Double amount;
 
     private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id")
+    private User admin;
 
     @CreationTimestamp
     @Column(updatable = false)

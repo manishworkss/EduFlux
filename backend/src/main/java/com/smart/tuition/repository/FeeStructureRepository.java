@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface FeeStructureRepository extends JpaRepository<FeeStructure, Long> {
     List<FeeStructure> findByCourse_CourseId(Long courseId);
+    List<FeeStructure> findByAdmin_UserId(Long adminId);
 }

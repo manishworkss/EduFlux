@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findByStudent_StudentIdOrderByCreatedAtDesc(Long studentId);
+    List<Notification> findByStudent_Admin_UserId(Long adminId);
 }

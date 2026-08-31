@@ -12,9 +12,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
-@Table(name = "student_fees")
+@Table(name = "student_fees", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"student_id", "fee_month"})
+})
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class StudentFee {
 
     @Id
@@ -26,7 +32,7 @@ public class StudentFee {
     private Student student;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fee_structure_id", nullable = false)
+    @JoinColumn(name = "fee_structure_id", nullable = true)
     private FeeStructure feeStructure;
 
     @NotNull(message = "Amount is required")
@@ -39,6 +45,13 @@ public class StudentFee {
     @Column(nullable = false)
     private Double paidAmount = 0.0;
 
+    @Column(nullable = false)
+    private Double remainingAmount = 0.0;
+
+    @NotNull(message = "Fee month is required")
+    @Column(name = "fee_month", nullable = false)
+    private LocalDate feeMonth;
+
     @NotNull(message = "Due date is required")
     private LocalDate dueDate;
 
@@ -46,8 +59,9 @@ public class StudentFee {
     @Column(nullable = false)
     private FeeStatus status;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "studentFee", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Payment> payments;
+    private List<Payment> payments = new java.util.ArrayList<>();
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -55,4 +69,15 @@ public class StudentFee {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    @PreUpdate
+    public void calculateRemainingAmount() {
+        if (this.amount != null && this.paidAmount != null) {
+            this.remainingAmount = this.amount - this.paidAmount;
+            if (this.remainingAmount < 0) {
+                this.remainingAmount = 0.0; // Avoid negative remaining amount
+            }
+        }
+    }
 }

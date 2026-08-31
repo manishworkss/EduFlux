@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "students")
@@ -32,20 +33,29 @@ public class Student {
 
     private String personalEmail;
     
-    private String courseName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id")
+    private Course course;
     
-    private BigDecimal monthlyFee;
+    private String academicYear;
 
     private Integer semester;
 
     private String phone;
+    private LocalDate dob;
     private String address;
-    private String parentName;
-    private String parentPhone;
+    private String city;
+    private String guardianName;
+    private String guardianPhone;
+    private String guardianRelationship;
     private String pincode;
     private String state;
     
     private LocalDate admissionDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id")
+    private User admin;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -53,4 +63,9 @@ public class Student {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @JsonProperty("courseName")
+    public String getCourseName() {
+        return course != null ? course.getCourseName() : null;
+    }
 }

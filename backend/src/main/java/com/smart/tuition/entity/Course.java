@@ -8,7 +8,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.smart.tuition.entity.User;
 
 @Entity
 @Table(name = "courses")
@@ -30,6 +33,10 @@ public class Course {
     private String description;
     
     private String status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id")
+    private User admin;
 
     @CreationTimestamp
     @Column(updatable = false)

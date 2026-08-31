@@ -7,7 +7,6 @@ import com.smart.tuition.dto.AuthResponse;
 import com.smart.tuition.dto.SignupRequest;
 import com.smart.tuition.dto.VerifyOtpRequest;
 import com.smart.tuition.entity.OtpVerification;
-import com.smart.tuition.entity.Student;
 import com.smart.tuition.entity.User;
 import com.smart.tuition.entity.enums.Role;
 import com.smart.tuition.repository.OtpVerificationRepository;
@@ -67,6 +66,8 @@ public class AuthController {
                 .role(Role.valueOf(userDetails.getRole()))
                 .mustChangePassword(userDetails.getMustChangePassword())
                 .className(user.getClassName())
+                .name(user.getName())
+                .profileCompleted(user.getProfileCompleted())
                 .build();
 
         return ResponseEntity.ok(response);
@@ -132,6 +133,7 @@ public class AuthController {
         user.setRole(Role.ROLE_ADMIN);
         user.setMustChangePassword(false);
         user.setClassName(signupRequest.getClassName());
+        user.setProfileCompleted(false);
         
         user = userRepository.save(user);
 
@@ -151,6 +153,8 @@ public class AuthController {
                 .role(Role.valueOf(userDetails.getRole()))
                 .mustChangePassword(userDetails.getMustChangePassword())
                 .className(user.getClassName())
+                .name(user.getName())
+                .profileCompleted(user.getProfileCompleted())
                 .build();
 
         return ResponseEntity.ok(response);
@@ -174,9 +178,63 @@ public class AuthController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setRawPassword(request.getNewPassword());
         user.setMustChangePassword(false);
         userRepository.save(user);
         
         return ResponseEntity.ok().body("{\"message\": \"Password changed successfully\"}");
+    }
+
+    public static class UpdateProfileRequest {
+        private String name;
+        private String password;
+        private String mobileNo;
+        private String address;
+        private String className;
+
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+        public String getPassword() { return password; }
+        public void setPassword(String password) { this.password = password; }
+        public String getMobileNo() { return mobileNo; }
+        public void setMobileNo(String mobileNo) { this.mobileNo = mobileNo; }
+        public String getAddress() { return address; }
+        public void setAddress(String address) { this.address = address; }
+        public String getClassName() { return className; }
+        public void setClassName(String className) { this.className = className; }
+    }
+
+    @org.springframework.web.bind.annotation.PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(
+            @RequestBody UpdateProfileRequest request,
+            Authentication authentication) {
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
+        }
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User user = userRepository.findById(userDetails.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        
+        if (request.getName() != null && !request.getName().trim().isEmpty()) {
+            user.setName(request.getName());
+        }
+        if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setRawPassword(request.getPassword());
+        }
+        if (request.getMobileNo() != null) {
+            user.setMobileNo(request.getMobileNo());
+        }
+        if (request.getAddress() != null) {
+            user.setAddress(request.getAddress());
+        }
+        if (request.getClassName() != null) {
+            user.setClassName(request.getClassName());
+        }
+        
+        user.setProfileCompleted(true);
+        userRepository.save(user);
+        
+        return ResponseEntity.ok().body("{\"message\": \"Profile updated successfully\"}");
     }
 }

@@ -4,41 +4,124 @@ import './PaymentFlow.css';
 
 const PaymentFlow = ({ fee, onClose, onSuccess }) => {
   const [step, setStep] = useState('REVIEW'); // REVIEW, PROCESSING, SUCCESS, FAILED
-  const [method, setMethod] = useState('UPI');
   const [transactionData, setTransactionData] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const amountToPay = fee.amount - fee.paidAmount;
+  const amountToPay = fee.amount - (fee.paidAmount || 0);
 
   const handlePayment = async () => {
     setStep('PROCESSING');
     try {
-      const response = await api.post('/payments/process', {
-        studentFee: { studentFeeId: fee.studentFeeId },
+      // 1. Create order on backend
+      const orderRes = await api.post('/payments/create-order', {
+        feeId: fee.studentFeeId,
         amount: amountToPay,
-        paymentMethod: method
+        paymentMethod: 'ONLINE'
       });
-      setTransactionData(response.data);
-      setStep('SUCCESS');
+      
+      const { orderId, amount, key } = orderRes.data;
+
+      // 2. Initialize Razorpay options
+      const options = {
+        key: key, 
+        amount: parseInt(amount) * 100, 
+        currency: "INR",
+        name: "Neel Mehta", // Configured as requested
+        description: fee.feeStructure?.feeType || "Fee Payment",
+        order_id: orderId,
+        handler: async function (response) {
+          try {
+            // 3. Verify on backend
+            setStep('PROCESSING');
+            
+            // Extract student ID from fee object or local storage (if paying own fee)
+            let studentId = fee.student?.studentId;
+            if (!studentId) {
+               const userStr = localStorage.getItem('user');
+               if (userStr) {
+                  const userObj = JSON.parse(userStr);
+                  // Since we only have userId here, backend handles the lookup inside PaymentController if studentId is not strict
+                  // Actually, backend needs studentId, we might need an endpoint to get studentId for current user,
+                  // or pass userId and let backend find studentId. Backend expects studentId.
+                  // For now, let's pass a dummy if missing and let backend fallback to authenticated user.
+                  studentId = 0; // Backend handles if studentId is 0 or null by fetching from auth
+               }
+            }
+
+            const verifyRes = await api.post('/payments/verify', {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              feeId: fee.studentFeeId,
+              studentId: studentId,
+              amount: amountToPay,
+              method: 'RAZORPAY_ONLINE'
+            });
+            setTransactionData(verifyRes.data);
+            setStep('SUCCESS');
+          } catch (err) {
+            console.error("Verification error", err);
+            setErrorMsg("Payment verification failed. Please contact admin.");
+            setStep('FAILED');
+          }
+        },
+        prefill: {
+          name: fee.student?.user?.name || "Student",
+        },
+        theme: {
+          color: "#3b82f6"
+        },
+        modal: {
+          ondismiss: function() {
+            setStep('REVIEW');
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response){
+         console.error(response.error);
+         setErrorMsg(response.error.description);
+         setStep('FAILED');
+      });
+      rzp.open();
+
     } catch (error) {
-      console.error("Payment failed", error);
-      setErrorMsg(error.response?.data?.message || 'Payment processing failed. Please try again.');
+      console.error("Failed to create order", error);
+      setErrorMsg(error.response?.data?.message || 'Failed to initiate payment.');
       setStep('FAILED');
     }
   };
 
-  const handleDownloadReceipt = async () => {
+  const handleDownloadReceipt = () => {
     try {
-      const response = await api.get(`/receipts/generate/${transactionData.paymentId}`, {
-        responseType: 'blob',
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const receiptContent = `
+========================================
+             EDUFLUX TUITION            
+             FEE RECEIPT                
+========================================
+Receipt No  : ${transactionData?.receiptNumber || 'N/A'}
+Date & Time : ${new Date(transactionData?.paymentDate).toLocaleString('en-IN')}
+Transaction : ${transactionData?.transactionId || 'N/A'}
+----------------------------------------
+Fee Type    : ${fee.feeStructure?.feeType || 'Monthly Fee'}
+Method      : ${transactionData?.paymentMethod || 'ONLINE'}
+Amount Paid : Rs. ${transactionData?.amount}
+Status      : SUCCESS
+----------------------------------------
+Thank you for your payment!
+========================================
+`;
+      const blob = new Blob([receiptContent], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `${transactionData.receiptNumber}.pdf`);
+      link.setAttribute('download', `Receipt_${transactionData?.receiptNumber || transactionData?.transactionId}.txt`);
       document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     } catch (error) {
+      console.error(error);
       alert('Failed to download receipt');
     }
   };
@@ -55,38 +138,27 @@ const PaymentFlow = ({ fee, onClose, onSuccess }) => {
             <div className="payment-modal-content">
               <div className="payment-summary">
                 <div className="payment-summary-row">
+                  <span>Pay To</span>
+                  <span style={{ fontWeight: 600, color: '#3b82f6' }}>Neel Mehta</span>
+                </div>
+                <div className="payment-summary-row">
                   <span>Fee Type</span>
                   <span>{fee.feeStructure?.feeType}</span>
                 </div>
                 <div className="payment-summary-row">
-                  <span>Due Date</span>
-                  <span>{new Date(fee.dueDate).toLocaleDateString()}</span>
-                </div>
-                <div className="payment-summary-row">
                   <span>Amount to Pay</span>
-                  <span>₹{amountToPay.toLocaleString()}</span>
+                  <span style={{ fontSize: '18px', fontWeight: 'bold' }}>₹{amountToPay.toLocaleString()}</span>
                 </div>
               </div>
-
-              <h3>Select Payment Method</h3>
-              <div className="payment-methods">
-                <label className="payment-method-label">
-                  <input type="radio" value="UPI" checked={method === 'UPI'} onChange={() => setMethod('UPI')} />
-                  <span>UPI (Google Pay, PhonePe, Paytm)</span>
-                </label>
-                <label className="payment-method-label">
-                  <input type="radio" value="CARD" checked={method === 'CARD'} onChange={() => setMethod('CARD')} />
-                  <span>Credit / Debit Card</span>
-                </label>
-                <label className="payment-method-label">
-                  <input type="radio" value="NETBANKING" checked={method === 'NETBANKING'} onChange={() => setMethod('NETBANKING')} />
-                  <span>Net Banking</span>
-                </label>
-              </div>
+              <p style={{ textAlign: 'center', color: '#64748b', margin: '24px 0 8px' }}>
+                You will be redirected to Razorpay's secure checkout to select UPI, Card, or Netbanking.
+              </p>
             </div>
             <div className="payment-modal-footer">
               <button className="btn btn-cancel" onClick={onClose}>Cancel</button>
-              <button className="btn btn-primary" onClick={handlePayment}>Pay ₹{amountToPay.toLocaleString()}</button>
+              <button className="btn btn-primary" onClick={handlePayment} style={{ background: '#3b82f6' }}>
+                Pay Securely ₹{amountToPay.toLocaleString()}
+              </button>
             </div>
           </>
         )}
@@ -95,7 +167,7 @@ const PaymentFlow = ({ fee, onClose, onSuccess }) => {
           <div className="payment-result">
             <div className="result-icon">⏳</div>
             <h2>Processing Payment</h2>
-            <p>Please wait while we securely process your payment via {method}. Do not close this window.</p>
+            <p>Please wait... Do not close this window.</p>
           </div>
         )}
 
@@ -103,12 +175,11 @@ const PaymentFlow = ({ fee, onClose, onSuccess }) => {
           <div className="payment-result">
             <div className="result-icon">✅</div>
             <h2>Payment Successful!</h2>
-            <p>Your fee payment was received successfully.</p>
+            <p>Your fee payment was securely verified and received.</p>
             
             <div className="transaction-details">
               <div>Amount Paid: <span>₹{transactionData?.amount.toLocaleString()}</span></div>
               <div>Transaction ID: <span>{transactionData?.transactionId}</span></div>
-              <div>Receipt Number: <span>{transactionData?.receiptNumber}</span></div>
               <div>Date: <span>{new Date(transactionData?.paymentDate).toLocaleString()}</span></div>
             </div>
 

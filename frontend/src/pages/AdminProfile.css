@@ -1,0 +1,53 @@
+.admin-profile-container {
+  background: white;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #bfdbfe; /* Subtle blue border for the whole page */
+}
+
+.profile-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 2px solid #cbd5e1; /* Default grey border */
+  color: #0f172a;
+  border-radius: 8px;
+  box-sizing: border-box;
+  outline: none;
+  font-weight: 700; /* Bold font for inputs */
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.profile-input:focus {
+  border-color: #3b82f6; /* Blue border on focus */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.profile-input:disabled {
+  background: #f8fafc;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.profile-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  color: #0f172a;
+  border-radius: 8px;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+  outline: none;
+  font-weight: 700;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.profile-textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}

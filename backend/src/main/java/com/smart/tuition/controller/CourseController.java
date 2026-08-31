@@ -15,15 +15,29 @@ import java.util.List;
 public class CourseController {
 
     private final CourseRepository courseRepository;
+    private final com.smart.tuition.repository.UserRepository userRepository;
 
     @GetMapping
-    public ResponseEntity<List<Course>> getAllCourses() {
+    public ResponseEntity<List<Course>> getAllCourses(org.springframework.security.core.Authentication authentication) {
+        if (authentication != null && authentication.getPrincipal() instanceof com.smart.tuition.security.CustomUserDetails) {
+            com.smart.tuition.security.CustomUserDetails userDetails = (com.smart.tuition.security.CustomUserDetails) authentication.getPrincipal();
+            if (userDetails.getRole().equals("ROLE_ADMIN")) {
+                return ResponseEntity.ok(courseRepository.findByAdmin_UserId(userDetails.getUserId()));
+            } else if (userDetails.getRole().equals("ROLE_STUDENT")) {
+                // Return courses for the student's admin if needed, but for now we can just return all or nothing.
+                // Wait, the Student Dashboard doesn't even fetch all courses. It fetches the student's own course.
+            }
+        }
         return ResponseEntity.ok(courseRepository.findAll());
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Course> createCourse(@RequestBody Course course) {
+    public ResponseEntity<Course> createCourse(@RequestBody Course course, org.springframework.security.core.Authentication authentication) {
+        com.smart.tuition.security.CustomUserDetails userDetails = (com.smart.tuition.security.CustomUserDetails) authentication.getPrincipal();
+        com.smart.tuition.entity.User adminUser = userRepository.findById(userDetails.getUserId())
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        course.setAdmin(adminUser);
         return ResponseEntity.ok(courseRepository.save(course));
     }
 

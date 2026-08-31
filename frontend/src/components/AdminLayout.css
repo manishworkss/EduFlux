@@ -6,17 +6,20 @@
 
 .sidebar {
   width: 250px;
-  background-color: #334155;
-  color: white;
-  padding: 20px;
+  background-color: #ffffff;
+  color: #0f172a;
+  padding: 24px 16px;
   display: flex;
   flex-direction: column;
+  border-right: 1px solid #f1f5f9;
 }
 
 .sidebar h2 {
   margin-bottom: 30px;
-  text-align: center;
-  color: #ffffff !important;
+  text-align: left;
+  color: #0f172a !important;
+  font-size: 18px;
+  padding-left: 12px;
 }
 
 .sidebar nav ul {
@@ -26,21 +29,25 @@
 }
 
 .sidebar nav ul li {
-  margin-bottom: 15px;
+  margin-bottom: 4px;
 }
 
 .sidebar nav ul li a {
-  color: #f1f5f9 !important;
+  color: #1e293b !important;
   text-decoration: none;
-  font-size: 16px;
-  display: block;
-  padding: 10px;
-  border-radius: 4px;
-  transition: background-color 0.3s;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
 }
 
-.sidebar nav ul li a:hover {
-  background-color: #34495e;
+.sidebar nav ul li a:hover,
+.sidebar nav ul li a.active {
+  background-color: #f1f5f9;
 }
 
 .logout-btn {
@@ -62,6 +69,13 @@
   background-color: #ffffff; /* Dashboard background */
   display: flex;
   flex-direction: column;
+  
+  /* Force light theme variables for the content area to ensure contrast */
+  --text: #475569;
+  --text-h: #0f172a;
+  --bg: #ffffff;
+  --border: #e2e8f0;
+  --code-bg: #f8fafc;
 }
 
 .header {
@@ -232,8 +246,9 @@
   outline: none;
   cursor: pointer;
   appearance: none;
-  padding-right: 16px;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%24%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+  padding-right: 18px;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236366f1%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
   background-repeat: no-repeat;
   background-position: right center;
+  background-size: 16px;
 }

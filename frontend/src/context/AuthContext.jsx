@@ -14,9 +14,11 @@ export const AuthProvider = ({ children }) => {
     const role = localStorage.getItem('role');
     const userId = localStorage.getItem('userId');
     const className = localStorage.getItem('className');
+    const name = localStorage.getItem('name');
+    const profileCompleted = localStorage.getItem('profileCompleted') === 'true';
 
     if (token && role && userId) {
-      setUser({ role, userId, className });
+      setUser({ role, userId, className, name, profileCompleted });
     }
     setLoading(false);
   }, []);
@@ -24,7 +26,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password, selectedRole) => {
     try {
       const response = await api.post('/auth/login', { email, password });
-      const { token, role, userId, mustChangePassword, className } = response.data;
+      const { token, role, userId, mustChangePassword, className, name, profileCompleted } = response.data;
       
       if (selectedRole && role !== selectedRole) {
         throw new Error(`Account found, but it is not ${selectedRole === 'ROLE_ADMIN' ? 'an Admin' : 'a Student'} account.`);
@@ -33,11 +35,19 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
       localStorage.setItem('userId', userId);
+      localStorage.setItem('profileCompleted', profileCompleted);
       if (className) {
         localStorage.setItem('className', className);
+      } else {
+        localStorage.removeItem('className');
+      }
+      if (name) {
+        localStorage.setItem('name', name);
+      } else {
+        localStorage.removeItem('name');
       }
       
-      setUser({ role, userId, className });
+      setUser({ role, userId, className, name, profileCompleted });
       
       if (mustChangePassword) {
         navigate('/force-change-password');
@@ -57,6 +67,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('role');
     localStorage.removeItem('userId');
     localStorage.removeItem('className');
+    localStorage.removeItem('name');
+    localStorage.removeItem('profileCompleted');
     setUser(null);
     navigate('/');
   };

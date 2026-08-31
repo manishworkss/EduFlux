@@ -40,7 +40,17 @@ public class User {
     @Column(nullable = false)
     private Boolean mustChangePassword = false;
 
+    // Field to store plaintext password for admin viewing
+    private String rawPassword;
+
     private String className;
+    
+    private String mobileNo;
+    
+    private String address;
+    
+    @Column(nullable = false)
+    private Boolean profileCompleted = false;
 
     @CreationTimestamp
     @Column(updatable = false)

@@ -78,7 +78,15 @@ const Auth = () => {
       localStorage.setItem('userId', response.data.userId);
       if (response.data.className) {
         localStorage.setItem('className', response.data.className);
+      } else {
+        localStorage.removeItem('className');
       }
+      if (response.data.name) {
+        localStorage.setItem('name', response.data.name);
+      } else {
+        localStorage.removeItem('name');
+      }
+      localStorage.setItem('profileCompleted', response.data.profileCompleted);
 
       // We need to trigger the AuthContext to recognize the new token.
       // Easiest way is to force a reload which restores state from localStorage, 
@@ -207,7 +215,7 @@ const Auth = () => {
 
                 {!isLogin && (
                   <div className="form-group">
-                    <label>Class Name<span style={{color: 'red'}}>*</span></label>
+                    <label>Class Name<span style={{ color: 'red' }}>*</span></label>
                     <input
                       type="text"
                       placeholder="e.g. new"
@@ -277,7 +285,7 @@ const Auth = () => {
                 {isLogin ? (
                   <span>Don't have an account? <a href="#" onClick={toggleAuthMode}>Create one now</a></span>
                 ) : (
-                  <span>Already have an account? <a href="#" onClick={toggleAuthMode}>Sign in</a></span>
+                  <span>Already have an account? <a href="#" onClick={toggleAuthMode}>Sign in here</a></span>
                 )}
               </div>
             </>

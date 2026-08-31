@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findByStudent_StudentId(Long studentId);
+    List<Payment> findByStudent_Admin_UserId(Long adminId);
     boolean existsByTransactionId(String transactionId);
     boolean existsByReceiptNumber(String receiptNumber);
 }

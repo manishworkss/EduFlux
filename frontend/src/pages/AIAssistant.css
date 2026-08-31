@@ -137,3 +137,43 @@
   background: #f8fafc;
   border-color: #94a3b8;
 }
+
+.chat-attach-btn {
+  background: transparent;
+  color: #64748b;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0 8px;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-attach-btn:hover {
+  color: #3b82f6;
+}
+
+.chat-file-bubble {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.chat-file-bubble .file-icon {
+  font-size: 1.5rem;
+}
+
+.chat-file-bubble .file-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

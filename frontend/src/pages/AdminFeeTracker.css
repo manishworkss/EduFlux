@@ -1,0 +1,151 @@
+.fee-tracker-container {
+  padding: 32px;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.tracker-header {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.tracker-header h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.tracker-header p {
+  color: #64748b;
+  margin: 0;
+  font-size: 15px;
+}
+
+.table-wrapper {
+  background: white;
+  border-radius: 20px;
+  padding: 0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  overflow: hidden;
+}
+
+.tracker-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tracker-table th {
+  background-color: #f8fafc;
+  padding: 16px 24px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tracker-table td {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1e293b;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.tracker-table tr:last-child td {
+  border-bottom: none;
+}
+
+.tracker-table tr:hover {
+  background-color: #f1f5f9;
+}
+
+.student-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.student-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.student-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.student-course {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.amount-paid {
+  color: #10b981;
+  font-weight: 700;
+}
+
+.amount-pending {
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+.amount-overdue {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badge-clear {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.badge-due {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.badge-alert {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.page-loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 100px);
+  font-size: 16px;
+  color: #64748b;
+  gap: 16px;
+}

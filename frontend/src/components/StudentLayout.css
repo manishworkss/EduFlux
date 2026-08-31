@@ -6,25 +6,28 @@
 
 .student-sidebar {
   width: 260px;
-  background-color: #1e293b;
-  color: #ffffff;
-  padding: 24px 20px;
+  background-color: #ffffff;
+  color: #0f172a;
+  padding: 24px 16px;
   display: flex;
   flex-direction: column;
+  border-right: 1px solid #f1f5f9;
 }
 
 .student-sidebar h2 {
-  color: #ffffff !important;
+  color: #0f172a !important;
   margin-bottom: 5px;
-  font-size: 1.5rem;
-  text-align: center;
+  font-size: 1.25rem;
+  text-align: left;
+  padding-left: 12px;
 }
 
 .student-subtitle {
   font-size: 0.75rem;
-  color: #94a3b8;
-  text-align: center;
-  margin-bottom: 30px;
+  color: #64748b;
+  text-align: left;
+  padding-left: 12px;
+  margin-bottom: 24px;
 }
 
 .student-sidebar nav ul {
@@ -34,24 +37,25 @@
 }
 
 .student-sidebar nav ul li {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .student-sidebar nav ul li a {
-  color: #cbd5e1 !important;
+  color: #1e293b !important;
   text-decoration: none;
   font-size: 15px;
+  font-weight: 500;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  border-radius: 8px;
-  transition: all 0.2s;
+  padding: 10px 12px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
 }
 
 .student-sidebar nav ul li a:hover,
 .student-sidebar nav ul li a.active {
-  background-color: #334155;
-  color: #ffffff !important;
+  background-color: #f1f5f9;
 }
 
 .student-logout-btn {
@@ -104,4 +108,108 @@
 .student-main-container {
   padding: 32px;
   flex-grow: 1;
+}
+
+.avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.avatar-circle.gradient-purple {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+}
+
+.header-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.profile-name {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 15px;
+}
+
+/* Logout Modal */
+.logout-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.logout-modal {
+  background: white;
+  padding: 32px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.logout-modal h3 {
+  margin: 0 0 12px 0;
+  color: #0f172a;
+  font-size: 20px;
+}
+
+.logout-modal p {
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.logout-modal-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.btn-no {
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  flex: 1;
+}
+
+.btn-no:hover {
+  background: #e2e8f0;
+}
+
+.btn-yes {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  flex: 1;
+}
+
+.btn-yes:hover {
+  background: #dc2626;
 }

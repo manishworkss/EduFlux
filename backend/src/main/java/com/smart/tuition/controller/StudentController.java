@@ -4,11 +4,11 @@ import com.smart.tuition.entity.Student;
 import com.smart.tuition.entity.User;
 import com.smart.tuition.entity.enums.Role;
 import com.smart.tuition.repository.StudentRepository;
-import com.smart.tuition.repository.UserRepository;
+
+import com.smart.tuition.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,30 +19,20 @@ import java.util.List;
 public class StudentController {
 
     private final StudentRepository studentRepository;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final StudentService studentService;
 
     @GetMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<List<Student>> getAllStudents() {
-        return ResponseEntity.ok(studentRepository.findAll());
+    public ResponseEntity<List<Student>> getAllStudents(org.springframework.security.core.Authentication authentication) {
+        com.smart.tuition.security.CustomUserDetails userDetails = (com.smart.tuition.security.CustomUserDetails) authentication.getPrincipal();
+        return ResponseEntity.ok(studentRepository.findByAdmin_UserId(userDetails.getUserId()));
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Student> registerStudent(@RequestBody Student studentDetails) {
-        // Create User account first
-        User user = new User();
-        user.setName(studentDetails.getUser().getName());
-        user.setEmail(studentDetails.getUser().getEmail());
-        user.setPassword(passwordEncoder.encode("student123")); // default password
-        user.setRole(Role.ROLE_STUDENT);
-        User savedUser = userRepository.save(user);
-
-        // Map relationships
-        studentDetails.setUser(savedUser);
-
-        return ResponseEntity.ok(studentRepository.save(studentDetails));
+    public ResponseEntity<java.util.Map<String, Object>> registerStudent(@RequestBody Student studentDetails, org.springframework.security.core.Authentication authentication) {
+        com.smart.tuition.security.CustomUserDetails userDetails = (com.smart.tuition.security.CustomUserDetails) authentication.getPrincipal();
+        return ResponseEntity.ok(studentService.registerStudent(studentDetails, userDetails.getUserId()));
     }
 
     @GetMapping("/{id}")

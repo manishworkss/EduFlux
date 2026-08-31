@@ -1,0 +1,158 @@
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.admin-modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 850px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.admin-modal-header {
+  padding: 24px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+}
+
+.admin-modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #0f172a;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-course-badge {
+  font-size: 12px;
+  padding: 4px 8px;
+  background: #e0e7ff;
+  color: #4338ca;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #64748b;
+  cursor: pointer;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: #0f172a;
+}
+
+.admin-modal-tabs {
+  display: flex;
+  padding: 0 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background: white;
+}
+
+.admin-modal-tab {
+  padding: 16px 24px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.admin-modal-tab:hover {
+  color: #0f172a;
+}
+
+.admin-modal-tab.active {
+  color: #3b82f6;
+}
+
+.admin-modal-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #3b82f6;
+  border-radius: 2px 2px 0 0;
+}
+
+.admin-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.admin-modal-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.admin-modal-table th {
+  text-align: left;
+  padding: 12px 16px;
+  background-color: #f8fafc;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-modal-table td {
+  padding: 16px;
+  font-size: 14px;
+  color: #1e293b;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.admin-modal-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-modal-table tr:hover td {
+  background-color: #f8fafc;
+}
+
+.empty-state {
+  text-align: center;
+  color: #64748b;
+  padding: 32px !important;
+  font-style: italic;
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 32px;
+  color: #64748b;
+  font-weight: 500;
+}

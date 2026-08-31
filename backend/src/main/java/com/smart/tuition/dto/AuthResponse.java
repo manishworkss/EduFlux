@@ -16,4 +16,6 @@ public class AuthResponse {
     private Role role;
     private Boolean mustChangePassword;
     private String className;
+    private String name;
+    private Boolean profileCompleted;
 }

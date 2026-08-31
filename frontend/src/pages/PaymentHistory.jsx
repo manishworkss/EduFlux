@@ -25,17 +25,34 @@ const PaymentHistory = () => {
 
   const downloadReceipt = async (payment) => {
     try {
-      const response = await api.get(`/receipts/generate/${payment.paymentId}`, {
-        responseType: 'blob',
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const receiptContent = `
+========================================
+             EDUFLUX TUITION            
+             FEE RECEIPT                
+========================================
+Receipt No  : ${payment.receiptNumber || 'N/A'}
+Date & Time : ${new Date(payment.paymentDate).toLocaleString('en-IN')}
+Transaction : ${payment.transactionId || 'N/A'}
+----------------------------------------
+Fee Type    : ${payment.studentFee?.feeStructure?.feeType || 'Monthly Fee'}
+Method      : ${payment.paymentMethod || 'ONLINE'}
+Amount Paid : Rs. ${payment.amount}
+Status      : ${payment.status}
+----------------------------------------
+Thank you for your payment!
+========================================
+`;
+      const blob = new Blob([receiptContent], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `${payment.receiptNumber}.pdf`);
+      link.setAttribute('download', `Receipt_${payment.receiptNumber || payment.transactionId}.txt`);
       document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     } catch (error) {
-      alert('Receipt backend functionality pending implementation.');
+      console.error(error);
+      alert('Failed to download receipt.');
     }
   };
 
@@ -76,7 +93,10 @@ const PaymentHistory = () => {
           <tbody>
             {filteredPayments.map(payment => (
               <tr key={payment.paymentId}>
-                <td>{new Date(payment.paymentDate).toLocaleDateString()}</td>
+                <td>{new Date(payment.paymentDate).toLocaleString('en-IN', {
+                  year: 'numeric', month: 'short', day: 'numeric',
+                  hour: '2-digit', minute: '2-digit', hour12: true
+                })}</td>
                 <td>{payment.studentFee?.feeStructure?.feeType}</td>
                 <td style={{ fontWeight: 600 }}>₹{payment.amount.toLocaleString()}</td>
                 <td>{payment.paymentMethod}</td>

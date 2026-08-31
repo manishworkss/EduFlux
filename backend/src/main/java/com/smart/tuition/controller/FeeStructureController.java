@@ -18,18 +18,24 @@ public class FeeStructureController {
 
     private final FeeStructureRepository feeStructureRepository;
     private final CourseRepository courseRepository;
+    private final com.smart.tuition.repository.UserRepository userRepository;
 
     @GetMapping
-    public ResponseEntity<List<FeeStructure>> getAllFeeStructures() {
-        return ResponseEntity.ok(feeStructureRepository.findAll());
+    public ResponseEntity<List<FeeStructure>> getAllFeeStructures(org.springframework.security.core.Authentication authentication) {
+        com.smart.tuition.security.CustomUserDetails userDetails = (com.smart.tuition.security.CustomUserDetails) authentication.getPrincipal();
+        return ResponseEntity.ok(feeStructureRepository.findByAdmin_UserId(userDetails.getUserId()));
     }
 
     @PostMapping
-    public ResponseEntity<FeeStructure> createFeeStructure(@RequestBody FeeStructure feeStructure) {
+    public ResponseEntity<FeeStructure> createFeeStructure(@RequestBody FeeStructure feeStructure, org.springframework.security.core.Authentication authentication) {
         if (feeStructure.getCourse() != null && feeStructure.getCourse().getCourseId() != null) {
             feeStructure.setCourse(courseRepository.findById(feeStructure.getCourse().getCourseId())
                     .orElseThrow(() -> new RuntimeException("Course not found")));
         }
+        com.smart.tuition.security.CustomUserDetails userDetails = (com.smart.tuition.security.CustomUserDetails) authentication.getPrincipal();
+        com.smart.tuition.entity.User adminUser = userRepository.findById(userDetails.getUserId())
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        feeStructure.setAdmin(adminUser);
         return ResponseEntity.ok(feeStructureRepository.save(feeStructure));
     }
     
